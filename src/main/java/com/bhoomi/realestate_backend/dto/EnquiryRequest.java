@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 public class EnquiryRequest {
 
-    @NotNull
     private Long propertyId;
 
     @NotBlank

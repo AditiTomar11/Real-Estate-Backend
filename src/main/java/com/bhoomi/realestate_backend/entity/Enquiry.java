@@ -21,7 +21,7 @@ public class Enquiry {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "property_id", nullable = false)
+    @JoinColumn(name = "property_id", nullable = true)
     private Property property;
 
     @ManyToOne
@@ -40,4 +40,8 @@ public class Enquiry {
     private String message;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EnquiryStatus status = EnquiryStatus.NEW;
 }

@@ -24,9 +24,19 @@ public class EnquiryController {
         return ResponseEntity.ok().build();
     }
 
+    // GET /api/enquiries?email=... → self-service lookup (public, no auth)
+    // GET /api/enquiries (no param) → admin inbox, enforced inside the service
     @GetMapping
+    public List<EnquiryResponse> getAll(@RequestParam(required = false) String email) {
+        if (email != null && !email.isBlank()) {
+            return enquiryService.getByEmail(email);
+        }
+        return enquiryService.getAllAdminOnly();
+    }
+
+    @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<EnquiryResponse> getAll() {
-        return enquiryService.getAll();
+    public EnquiryResponse getById(@PathVariable Long id) {
+        return enquiryService.getById(id);
     }
 }
