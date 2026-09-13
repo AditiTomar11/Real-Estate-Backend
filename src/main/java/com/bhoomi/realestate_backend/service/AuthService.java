@@ -7,6 +7,7 @@ import com.bhoomi.realestate_backend.entity.Role;
 import com.bhoomi.realestate_backend.entity.User;
 import com.bhoomi.realestate_backend.repository.UserRepository;
 import com.bhoomi.realestate_backend.security.JwtUtil;
+import com.bhoomi.realestate_backend.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,12 +28,13 @@ public class AuthService {
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER); // registration always creates a regular user, never an admin
         userRepository.save(user);
 
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
-        return new AuthResponse(token, user.getName(), user.getEmail(), user.getRole());
+        return new AuthResponse(token, user.getName(), user.getEmail(), user.getPhone(), user.getRole());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -44,6 +46,12 @@ public class AuthService {
         }
 
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
-        return new AuthResponse(token, user.getName(), user.getEmail(), user.getRole());
+        return new AuthResponse(token, user.getName(), user.getEmail(), user.getPhone(), user.getRole());
+    }
+
+    public AuthResponse.UserInfo getCurrentUser() {
+        User user = userRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+        return new AuthResponse.UserInfo(user.getName(), user.getEmail(), user.getPhone(), user.getRole());
     }
 }
