@@ -7,6 +7,7 @@ import com.bhoomi.realestate_backend.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,11 +26,9 @@ public class AuthController {
         return authService.login(request);
     }
 
-    // Returns the profile of whoever's token is on the request.
-    // Requires a valid token — /api/auth/me is NOT in the permitAll list,
-    // which is deliberate: an anonymous caller has no profile to return.
     @GetMapping("/me")
-    public AuthResponse.UserInfo me() {
+    @PreAuthorize("isAuthenticated()")
+    public AuthResponse.UserInfo currentUser() {
         return authService.getCurrentUser();
     }
 }
