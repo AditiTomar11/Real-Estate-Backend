@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import org.hibernate.annotations.ColumnDefault;
 import java.time.LocalDateTime;
 
 
@@ -43,5 +43,6 @@ public class Enquiry {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @ColumnDefault("'NEW'")
     private EnquiryStatus status = EnquiryStatus.NEW;
 }
