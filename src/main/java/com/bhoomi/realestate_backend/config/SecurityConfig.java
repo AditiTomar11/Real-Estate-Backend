@@ -70,6 +70,11 @@ public class SecurityConfig {
                                 "/api/testimonials/**", "/api/site-settings/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/properties/compare").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/enquiries").permitAll()
+                        // GET /api/enquiries?email=... is the public self-service lookup used by the
+                        // "My Enquiries" screen (the frontend calls it without an Authorization header,
+                        // so it must be permitted here). GET without an email param is the admin inbox
+                        // and is still blocked for non-admins inside EnquiryService.getAllAdminOnly().
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/enquiries").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

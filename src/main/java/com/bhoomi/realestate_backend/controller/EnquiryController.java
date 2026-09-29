@@ -25,10 +25,13 @@ public class EnquiryController {
     }
 
     // GET /api/enquiries?email=... → self-service lookup (public, no auth)
-    // GET /api/enquiries (no param) → admin inbox, enforced inside the service
+    // GET /api/enquiries (no email param at all) → admin inbox, enforced inside the service
+    // The check is on the param being *present*, not non-blank: if the caller passes an
+    // empty email we return that (empty) lookup result instead of falling into the
+    // admin-inbox path and getting a 403.
     @GetMapping
     public List<EnquiryResponse> getAll(@RequestParam(required = false) String email) {
-        if (email != null && !email.isBlank()) {
+        if (email != null) {
             return enquiryService.getByEmail(email);
         }
         return enquiryService.getAllAdminOnly();
